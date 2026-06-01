@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Counter</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --danger: #dc2626;
+            --success: #16a34a;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Large Clicker Area */
+        .clicker-btn {
+            width: 100%;
+            height: 180px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 4rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transition: transform 0.05s ease, background-color 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .clicker-btn:active {
+            transform: scale(0.98);
+            background-color: #1d4ed8;
+        }
+
+        /* Control Panel Row */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-reset { background-color: var(--danger); }
+        .btn-reset:active { background-color: #b91c1c; }
+
+        .btn-save { background-color: var(--success); }
+        .btn-save:active { background-color: #15803d; }
+
+        /* Tag Input Group */
+        .tag-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tag-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* Saved Logs Section */
+        .logs-container {
+            margin-top: 10px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logs-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .clear-logs {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 0.85rem;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .log-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-item {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .log-tag {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .log-count {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <button class="clicker-btn" id="clicker">0</button>
+
+        <div class="tag-group">
+            <label for="tagInput">Tag / Note (Optional)</label>
+            <input type="text" id="tagInput" placeholder="e.g., Lap 1, Set A, Tasbeeh">
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-reset" id="resetBtn">Reset</button>
+            <button class="btn btn-save" id="saveBtn">Save Log</button>
+        </div>
+
+        <div class="logs-container">
+            <div class="logs-header">
+                <span class="logs-title">Saved History</span>
+                <button class="clear-logs" id="clearBtn">Clear History</button>
+            </div>
+            <ul class="log-list" id="logList"></ul>
+        </div>
+    </div>
+
+    <script>
+        let count = 0;
+        
+        // Target elements
+        const clickerEl = document.getElementById('clicker');
+        const resetBtnEl = document.getElementById('resetBtn');
+        const saveBtnEl = document.getElementById('saveBtn');
+        const clearBtnEl = document.getElementById('clearBtn');
+        const tagInputEl = document.getElementById('tagInput');
+        const logListEl = document.getElementById('logList');
+
+        // Setup robust event listeners directly in JS
+        clickerEl.addEventListener('click', function(e) {
+            e.preventDefault();
+            count++;
+            clickerEl.innerText = count;
+        });
+
+        resetBtnEl.addEventListener('click', function() {
+            count = 0;
+            clickerEl.innerText = count;
+        });
+
+        saveBtnEl.addEventListener('click', function() {
+            let tagText = tagInputEl.value.trim();
+            if (!tagText) {
+                tagText = `Count`;
+            }
+
+            const newLog = {
+                tag: tagText,
+                value: count,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+
+            const existingLogs = JSON.parse(localStorage.getItem('counterLogs')) || [];
+            existingLogs.unshift(newLog);
+            localStorage.setItem('counterLogs', JSON.stringify(existingLogs));
+
+            tagInputEl.value = '';
+            renderLogs();
+        });
+
+        clearBtnEl.addEventListener('click', function() {
+            if(confirm("Are you sure you want to delete all saved logs?")) {
+                localStorage.removeItem('counterLogs');
+                renderLogs();
+            }
+        });
+
+        function renderLogs() {
+            logListEl.innerHTML = '';
+            const logs = JSON.parse(localStorage.getItem('counterLogs')) || [];
+            
+            if (logs.length === 0) {
+                logListEl.innerHTML = '<li style="color: #9ca3af; font-size: 0.9rem; text-align: center; padding: 10px;">No saved items yet.</li>';
+                return;
+            }
+
+            logs.forEach(log => {
+                const li = document.createElement('li');
+                li.className = 'log-item';
+                li.innerHTML = `
+                    <div>
+                        <span class="log-tag">${escapeHtml(log.tag)}</span>
+                        <small style="color: #9ca3af; margin-left: 5px;">(${log.time})</small>
+                    </div>
+                    <span class="log-count">${log.value}</span>
+                `;
+                logListEl.appendChild(li);
+            });
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize saved data on startup
+        renderLogs();
+    </script>
+</body>
+</html>
