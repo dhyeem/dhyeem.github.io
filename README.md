@@ -1,9 +1,360 @@
-#### Some Tools for me :).
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abdurrahman | Just making life easier</title>
+    
+    <!-- Load Fonts: Inter for UI, JetBrains Mono for Code/Tech feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Load FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        tech: {
+                            dark: '#050b14',
+                            card: '#0a1526',
+                            cyan: '#00f0ff',
+                            blue: '#0077ff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-## سبحان الله
-[Tasbeeh](/tsbeeh)
+    <style>
+        body {
+            background-color: #050b14;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
 
-## Cube log analyzer
-[Cube TS](Cube/index.html)
+        /* Fixed background canvas */
+        #network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
 
+        /* Glassmorphism & Neon Glow Effects */
+        .glass-card {
+            background: rgba(10, 21, 38, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
+        .glass-card:hover {
+            border-color: rgba(0, 240, 255, 0.6);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.2), inset 0 0 15px rgba(0, 119, 255, 0.1);
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(10, 21, 38, 0.8);
+        }
+
+        /* Blinking Terminal Cursor */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+            border-right: 2px solid #00f0ff;
+            padding-right: 4px;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #00f0ff; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050b14; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0077ff; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff; 
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative font-sans">
+
+    <!-- Background Canvas -->
+    <canvas id="network-canvas"></canvas>
+
+    <!-- Main Container -->
+    <main class="flex-grow container mx-auto px-6 py-12 md:py-24 max-w-6xl relative z-10">
+        
+        <!-- Header / Hero Section -->
+        <header class="text-center mb-20 animate-fade-in">
+            <div class="inline-block mb-4 p-4 rounded-full bg-tech-card/50 border border-tech-blue/30 shadow-[0_0_15px_rgba(0,119,255,0.2)]">
+                <i class="fa-solid fa-network-wired text-4xl text-tech-cyan"></i>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-4 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-tech-cyan to-tech-blue">
+                Dhyeem
+            </h1>
+            <h2 class="text-xl md:text-2xl font-mono text-gray-400">
+                <span class="cursor-blink">> Network Engineering & Automation_</span>
+            </h2>
+            <p class="mt-6 text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                Welcome to my public workspace. Below is a collection of tools, scripts, and projects focused on optimizing networks and streamlining operations.
+            </p>
+        </header>
+
+        <!-- Tools Section -->
+        <section id="tools-section" class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <i class="fa-solid fa-terminal text-tech-cyan"></i>
+                <h3 class="text-2xl font-mono font-bold text-white uppercase tracking-wider">Deployments & Tools</h3>
+                <div class="h-px bg-gradient-to-r from-tech-cyan/50 to-transparent flex-grow ml-4"></div>
+            </div>
+            
+            <!-- Grid Container - populated by JS -->
+            <div id="tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Dynamic cards will be injected here -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-tech-blue/20 bg-tech-dark/80 backdrop-blur-md py-8 mt-auto z-10 relative">
+        <div class="container mx-auto px-6 text-center text-sm text-gray-500 font-mono">
+            <p>© <span id="year"></span> Dhyeem. All systems operational.</p>
+            <div class="flex justify-center gap-4 mt-4">
+                <a href="#" class="hover:text-tech-cyan transition-colors"><i class="fa-brands fa-github text-xl"></i></a>
+                <a href="#" class="hover:text-tech-cyan transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // =========================================================================
+        // 🛠️ CONFIGURATION: MANAGE YOUR TOOLS AND LINKS HERE
+        // It is easy to change locations or hierarchy. Just edit this array.
+        // Icons use FontAwesome class names (e.g., 'fa-solid fa-server').
+        // =========================================================================
+        const toolsList = [
+            {
+                name: 'Tasbeeh',
+                description: 'Digital counter and spiritual tracking tool.',
+                icon: 'fa-solid fa-fingerprint', // Changed to fingerprint for a tech vibe, or use fa-calculator
+                url: 'https://dhyeem.github.io/est/'
+            },
+            {
+                name: 'Webex Automator',
+                description: 'Automate Webex room creation, user invites, and automated messaging via APIs.',
+                icon: 'fa-solid fa-robot',
+                url: '#' // Replace with actual link
+            },
+            {
+                name: 'Netmiko Scripts',
+                description: 'Python scripts for concurrent SSH connections and configuration management across network devices.',
+                icon: 'fa-solid fa-code',
+                url: '#' // Replace with actual link
+            },
+            {
+                name: 'Local DNS Tester',
+                description: 'Utility for checking local DNS resolution times, propagation, and DNSSEC validation.',
+                icon: 'fa-solid fa-server',
+                url: '#' // Replace with actual link
+            },
+            {
+                name: 'Subnet Calculator',
+                description: 'Quickly calculate network boundaries, broadcast addresses, and usable host ranges.',
+                icon: 'fa-solid fa-network-wired',
+                url: '#' // Replace with actual link
+            },
+            {
+                name: 'API Payload Builder',
+                description: 'Construct and validate JSON/XML payloads for common controller APIs (DNAC, ACI).',
+                icon: 'fa-solid fa-brackets-curly',
+                url: '#' // Replace with actual link
+            }
+        ];
+
+        // Set current year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Render Tools dynamically
+        const toolsGrid = document.getElementById('tools-grid');
+
+        function renderTools() {
+            toolsGrid.innerHTML = ''; // Clear existing
+            
+            toolsList.forEach((tool, index) => {
+                // Determine animation delay for cascading effect
+                const delay = index * 100;
+                
+                const cardHTML = `
+                    <a href="${tool.url}" target="_blank" rel="noopener noreferrer" 
+                       class="glass-card aspect-square rounded-2xl p-6 flex flex-col items-center justify-center text-center group no-underline"
+                       style="animation: fadeIn 0.5s ease forwards ${delay}ms; opacity: 0;">
+                        
+                        <div class="w-16 h-16 rounded-full bg-tech-card border border-tech-blue/30 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-tech-blue/20 transition-all duration-300 shadow-[0_0_10px_rgba(0,119,255,0.1)] group-hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]">
+                            <i class="${tool.icon} text-3xl text-tech-blue group-hover:text-tech-cyan transition-colors"></i>
+                        </div>
+                        
+                        <h4 class="text-xl font-bold text-white mb-2 font-mono group-hover:text-tech-cyan transition-colors">${tool.name}</h4>
+                        
+                        <p class="text-sm text-gray-400 line-clamp-3">${tool.description}</p>
+                        
+                        <div class="mt-auto pt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <span class="text-xs font-mono text-tech-cyan bg-tech-cyan/10 px-3 py-1 rounded-full border border-tech-cyan/20">Launch <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                        </div>
+                    </a>
+                `;
+                toolsGrid.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        // Additional CSS for the delayed fade in
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initial render
+        renderTools();
+
+        // =========================================================================
+        // 🌐 NETWORK CANVAS ANIMATION
+        // Creates a connected node effect in the background
+        // =========================================================================
+        const canvas = document.getElementById('network-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        const connectionDistance = 150;
+        
+        // Configuration
+        const particleCount = window.innerWidth < 768 ? 40 : 80; // Less particles on mobile
+        const particleSpeed = 0.5;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * particleSpeed;
+                this.vy = (Math.random() - 0.5) * particleSpeed;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx = -this.vx;
+                if (this.y < 0 || this.y > height) this.vy = -this.vy;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // Interactive mouse connection
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Update and draw particles
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Connect particles to each other
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 119, 255, ${1 - distance / connectionDistance})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Connect particles to mouse
+                if (mouse.x != null && mouse.y != null) {
+                    const dx = particles[i].x - mouse.x;
+                    const dy = particles[i].y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance * 1.5) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${1 - distance / (connectionDistance * 1.5)})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
