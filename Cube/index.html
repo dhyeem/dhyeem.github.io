@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CUBE SIP Troubleshooter</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="top">
+  <div>
+    <h1>CUBE SIP Troubleshooter</h1>
+    <div class="sub">Paste <code>debug ccsip messages</code> + <code>debug voip ccapi inout</code> + your config. Get the call flow, the dial-peer matching and where it breaks.</div>
+  </div>
+  <div class="top-right">
+    <span class="badge-priv" title="Everything runs in your browser. Nothing is uploaded.">&#128274; 100% local, nothing is uploaded</span>
+    <label class="switch"><input type="checkbox" id="mask"> Mask numbers &amp; IPs</label>
+  </div>
+</header>
+
+<main id="app">
+  <!-- ======================= INPUT VIEW ======================= -->
+  <section id="sec-input">
+    <div class="intro">
+      <b>Here is what I need from you, in this order.</b> I cannot ask you questions while I analyse, so each step below tells you exactly what to collect and where to paste it.
+      Steps 2 and 3 are required; everything else makes the answer more precise. Missing items are listed again with the result.
+    </div>
+
+    <div class="card" id="step1">
+      <h2><span class="n">1</span> Prepare the router <span class="tag">once</span></h2>
+      <p>Paste these on the CUBE (IOS-XE 17.x). Timestamps with milliseconds and a big buffer are what make the log usable. <code>voice iec syslog</code> adds the disconnect reason.</p>
+      <div class="cmdbox"><pre id="cmd-prep" class="nomask"></pre><button class="copy" data-copy="#cmd-prep">Copy</button></div>
+      <p class="muted small">Minimal variant (if you cannot change logging): only <code>debug ccsip messages</code>, <code>debug voip ccapi inout</code>, <code>clear logging</code>. The tool still works but cannot detect dropped lines or give millisecond timing.</p>
+    </div>
+
+    <div class="card" id="step2">
+      <h2><span class="n">2</span> Make ONE failing call, then paste the debugs <span class="tag req">required</span> <span class="status" id="st-debug"></span></h2>
+      <div class="cmdbox"><pre id="cmd-collect" class="nomask"></pre><button class="copy" data-copy="#cmd-collect">Copy</button></div>
+      <p>Paste the output of <code>show logging</code> here (both debugs together, as they arrive interleaved). Terminal-recorder logs with <code>HH:MM:SS.mmm &sect;</code> prefixes are cleaned automatically.</p>
+      <textarea id="in-debug" rows="9" spellcheck="false" placeholder="*Mar 18 09:30:00.008: //-1/xxxxxxxxxxxx/SIP/Msg/ccsipDisplayMsg:&#10;Received:&#10;INVITE sip:+966138105234@10.170.34.114:5060 SIP/2.0 ..."></textarea>
+      <div class="row"><label class="file">Load from file <input type="file" data-target="#in-debug" accept=".txt,.log,text/*"></label><span class="hint" id="hint-debug"></span></div>
+    </div>
+
+    <div class="card" id="step3">
+      <h2><span class="n">3</span> Paste the configuration <span class="tag req">required</span> <span class="status" id="st-config"></span></h2>
+      <div class="cmdbox"><pre id="cmd-config" class="nomask"></pre><button class="copy" data-copy="#cmd-config">Copy</button></div>
+      <p>Paste <code>show running-config</code> (whole file or at least: dial-peers, <code>voice translation-rule/profile</code>, <code>voice class</code>, <code>sip-ua</code>, <code>voice service voip</code>). Passwords and certificates are stripped locally before parsing.</p>
+      <textarea id="in-config" rows="7" spellcheck="false" placeholder="dial-peer voice 300 voip&#10; incoming called-number 9661381052.. ..."></textarea>
+      <div class="row"><label class="file">Load from file <input type="file" data-target="#in-config" accept=".txt,.log,.cfg,text/*"></label><span class="hint" id="hint-config"></span></div>
+    </div>
+
+    <div class="card" id="step4">
+      <h2><span class="n">4</span> Extra show outputs <span class="tag">optional, more precise</span></h2>
+      <details>
+        <summary><code>show dial-peer voice summary</code> <span class="status" id="st-summary"></span> &mdash; adds operational state (down / busyout)</summary>
+        <textarea id="in-summary" rows="5" spellcheck="false"></textarea>
+      </details>
+      <details>
+        <summary><code>show dialplan number &lt;number&gt;</code> <span class="status" id="st-dialplan"></span> &mdash; lets me compare my simulation with the router</summary>
+        <textarea id="in-dialplan" rows="5" spellcheck="false"></textarea>
+      </details>
+      <details>
+        <summary><code>show voip trace cover-buffers</code> <span class="status" id="st-trace"></span> &mdash; helps pairing the two call legs (IOS-XE 17.4+)</summary>
+        <textarea id="in-trace" rows="5" spellcheck="false"></textarea>
+      </details>
+    </div>
+
+    <div class="card" id="step5">
+      <h2><span class="n">5</span> ITSP profile <span class="tag">recommended</span> <span class="status" id="st-itsp"></span></h2>
+      <p>Tell me what your ITSP gives you and what it expects. I use this to check <b>+E.164</b> formats and your DID ranges on every call. Saved in this browser only (localStorage).</p>
+      <div class="form">
+        <label>Profile name <input id="itsp-name" type="text"></label>
+        <label>ITSP SIP IP addresses (comma separated) <input id="itsp-ips" type="text" placeholder="10.154.15.1"></label>
+        <label>Country code (no +) <input id="itsp-cc" type="text" size="4" placeholder="966"></label>
+        <label class="wide">My DID ranges (one per line / comma)
+          <textarea id="itsp-ranges" rows="3" spellcheck="false" placeholder="+966138105200-299&#10;+9661381060xx&#10;+966138107000"></textarea>
+        </label>
+        <fieldset><legend>ITSP &rarr; CUBE (inbound)</legend>
+          <label>Called number arrives as <select id="itsp-in-called"></select></label>
+          <label>Calling number arrives as <select id="itsp-in-calling"></select></label>
+        </fieldset>
+        <fieldset><legend>CUBE &rarr; ITSP (outbound)</legend>
+          <label>ITSP wants called as <select id="itsp-out-called"></select></label>
+          <label>ITSP wants calling (From / PAI) as <select id="itsp-out-calling"></select></label>
+          <label class="inline"><input type="checkbox" id="itsp-callerrange"> Caller ID must be inside my DID ranges</label>
+        </fieldset>
+      </div>
+      <div class="row">
+        <button id="itsp-export" type="button">Export JSON</button>
+        <label class="file">Import JSON <input type="file" id="itsp-import" accept="application/json,.json"></label>
+      </div>
+    </div>
+
+    <div class="card" id="step6">
+      <h2><span class="n">6</span> Which call? <span class="tag">optional</span></h2>
+      <label>Number you dialled or that was dialled (any part, digits only) <input id="in-focus" type="text" placeholder="e.g. 138105234"></label>
+      <span class="muted small">If set and one call matches, it opens directly. Otherwise you get the list of all calls.</span>
+    </div>
+
+    <div class="actions">
+      <button id="btn-analyze" class="primary">Analyze</button>
+      <button id="btn-sample" type="button">Load sample data</button>
+      <button id="btn-clear" type="button">Clear</button>
+      <span id="analyze-msg" class="muted"></span>
+    </div>
+  </section>
+
+  <!-- ======================= CALL LIST ======================= -->
+  <section id="sec-results" hidden></section>
+
+  <!-- ======================= CALL DETAIL ======================= -->
+  <section id="sec-detail" hidden></section>
+</main>
+
+<footer>
+  Dial-peer matching and translation are a <b>simulation</b> of Cisco's documented behaviour; when the CCAPI debug is present the router's own answer is used and the simulation only explains it.
+  The <code>debug voip ccapi inout</code> parser follows Cisco's documented line format and has not yet been verified against a real capture.
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

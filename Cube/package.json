@@ -1,0 +1,1 @@
+{ "name": "cube-sip-troubleshooter", "version": "0.1.0", "private": true, "type": "module", "scripts": { "test": "node --test \"tests/*.test.mjs\"", "samples": "node tools/make-samples.mjs && node tools/make-config-sample.mjs", "serve": "python -m http.server 8080" } }
