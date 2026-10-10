@@ -1,0 +1,145 @@
+!
+! DUMMY LAB CONFIGURATION - all values are fictional: RFC 5737 / RFC 1918 addresses and numbers in the Saudi (CST) numbering format with made-up subscriber digits
+!
+version 17.9
+service timestamps debug datetime msec
+service timestamps log datetime localtime
+!
+hostname CUBE-LAB-01
+!
+no ip domain lookup
+ip domain name lab.example.com
+!
+voice service voip
+ ip address trusted list
+  ipv4 172.16.10.11
+  ipv4 172.16.10.12
+  ipv4 172.16.10.13
+  ipv4 198.51.100.10
+ allow-connections h323 to h323
+ allow-connections h323 to sip
+ allow-connections sip to h323
+ allow-connections sip to sip
+ fax protocol pass-through g711alaw
+ trace
+ sip
+  header-passing
+  asymmetric payload dtmf
+  midcall-signaling passthru media-change
+!
+voice class codec 1
+ codec preference 1 g711alaw
+ codec preference 2 g711ulaw
+!
+voice translation-rule 1
+ rule 1 /\(^71..\)/ /9\1/
+!
+voice translation-rule 4
+ rule 1 /^.?9661355501\(..\)$/ /71\1/
+!
+voice translation-rule 5
+ rule 1 /^\+966\(5........\)$/ /0\1/
+ rule 2 /^\+966\(1........\)$/ /0\1/
+ rule 3 /^966\(.........\)$/ /0\1/
+!
+voice translation-rule 6
+ rule 1 /^71\(..\)$/ /+9661355501\1/
+!
+voice translation-profile Incoming
+ translate calling 5
+ translate called 4
+!
+voice translation-profile Outgoing
+ translate calling 1
+!
+voice translation-profile PSTN-IN
+ translate calling 5
+ translate called 4
+!
+voice translation-profile PSTN-OUT
+ translate calling 6
+!
+interface GigabitEthernet0/0/0
+ description *** SIP circuit to ITSP ***
+ ip address 192.0.2.2 255.255.255.252
+!
+interface GigabitEthernet0/0/1
+ description *** LAN to CUCM ***
+ ip address 172.16.5.250 255.255.255.0
+!
+dial-peer voice 100 voip
+ description outgoing to PSTN (legacy, disabled)
+ translation-profile incoming Incoming
+ translation-profile outgoing Outgoing
+ shutdown
+ destination-pattern .T
+ rtp payload-type nte 97
+ session protocol sipv2
+ session target ipv4:198.51.100.10:5060
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 102 voip
+ description to CUCM publisher
+ destination-pattern 71..$
+ session protocol sipv2
+ session target ipv4:172.16.10.11
+ session transport udp
+ voice-class codec 1
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 200 voip
+ description inbound from CUCM
+ session protocol sipv2
+ session target sip-server
+ session transport udp
+ incoming called-number 71..
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 300 voip
+ description inbound DIDs from ITSP
+ translation-profile incoming PSTN-IN
+ session protocol sipv2
+ session target sip-server
+ session transport udp
+ incoming called-number 9661355501..
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 103 voip
+ description to CUCM subscriber (backup)
+ preference 4
+ destination-pattern 71..$
+ session protocol sipv2
+ session target ipv4:172.16.10.12
+ session transport udp
+ dtmf-relay rtp-nte
+ codec g711alaw
+ no vad
+!
+dial-peer voice 500 voip
+ description outgoing to PSTN
+ translation-profile incoming PSTN-IN
+ translation-profile outgoing PSTN-OUT
+ destination-pattern .T
+ rtp payload-type nte 97
+ session protocol sipv2
+ session target ipv4:198.51.100.10:5060
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+!
+sip-ua
+ retry invite 3
+ sip-server ipv4:198.51.100.10
+ connection-reuse via-port
+!
+end

@@ -1,0 +1,125 @@
+001000: *Mar 18 09:30:00.008: //-1/xxxxxxxxxxxx/SIP/Msg/ccsipDisplayMsg:
+Received: 
+INVITE sip:+966135560134@192.0.2.2:5060 SIP/2.0
+Via: SIP/2.0/UDP 198.51.100.10:5060;branch=z9hG4bKitsp0001
+From: <sip:+966505550123@198.51.100.10>;tag=itsp-tag-1
+To: <sip:+966135560134@192.0.2.2>
+Call-ID: a1b2c3d4-0001@198.51.100.10
+CSeq: 1 INVITE
+Contact: <sip:+966505550123@198.51.100.10:5060>
+Max-Forwards: 69
+Allow: INVITE, ACK, CANCEL, BYE, OPTIONS
+Content-Type: application/sdp
+Content-Length: 286
+
+v=0
+o=CiscoSystemsSIP-GW-UserAgent 1234 5678 IN IP4 198.51.100.10
+s=SIP Call
+c=IN IP4 198.51.100.10
+t=0 0
+m=audio 16384 RTP/AVP 8 0 18 101
+c=IN IP4 198.51.100.10
+a=rtpmap:8 PCMA/8000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:18 G729/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+
+001001: *Mar 18 09:30:00.011: //-1/xxxxxxxxxxxx/CCAPI/cc_api_call_setup_ind:
+   Interface=0x7F1C2C3D4E00, Call Info(
+   Calling Number=+966505550123,(Calling Name=)(TON=Unknown, NPI=Unknown, Screening=Not Screened, Presentation=Allowed),
+   Called Number=+966135560134(TON=Unknown, NPI=Unknown),
+   Calling Translated=FALSE, Subscriber Type Str=RegularLine, FinalDestinationFlag=TRUE,
+   Incoming Dial-peer=500, Progress Indication=NULL(0), Calling IE Present=TRUE,
+   Source Trkgrp Route Label=, Target Trkgrp Route Label=, CLID Transparent=FALSE), Call Id=-1
+001002: *Mar 18 09:30:00.015: //2001/AABBCCDD0001/SIP/Msg/ccsipDisplayMsg:
+Sent: 
+SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 198.51.100.10:5060;branch=z9hG4bKitsp0001
+From: <sip:+966505550123@198.51.100.10>;tag=itsp-tag-1
+To: <sip:+966135560134@192.0.2.2>
+Call-ID: a1b2c3d4-0001@198.51.100.10
+CSeq: 1 INVITE
+Allow-Events: telephone-event
+Server: Cisco-SIPGateway/IOS-17.6.1a
+Content-Length: 0
+
+
+001003: *Mar 18 09:30:00.018: //2001/AABBCCDD0001/CCAPI/ccCallSetupRequest:
+   Calling Number=+966505550123, Called Number=+966135560134, Calling Translated=FALSE, Called Translated=FALSE,
+   Outgoing Dial-peer=500, Call Id=2002
+001004: *Mar 18 09:30:00.024: //2002/AABBCCDD0001/SIP/Msg/ccsipDisplayMsg:
+Sent: 
+INVITE sip:+966135560134@198.51.100.10:5060 SIP/2.0
+Via: SIP/2.0/UDP 192.0.2.2:5060;branch=z9hG4bKcube0002
+From: <sip:0505550123@192.0.2.2>;tag=cube-tag-2
+To: <sip:+966135560134@198.51.100.10>
+Call-ID: e5f6a7b8-0002@192.0.2.2
+CSeq: 101 INVITE
+Contact: <sip:0505550123@192.0.2.2:5060>
+Max-Forwards: 68
+Allow: INVITE, OPTIONS, BYE, CANCEL, ACK, PRACK, UPDATE, REFER
+Content-Type: application/sdp
+Content-Length: 248
+
+v=0
+o=CiscoSystemsSIP-GW-UserAgent 1234 5678 IN IP4 192.0.2.2
+s=SIP Call
+c=IN IP4 192.0.2.2
+t=0 0
+m=audio 16384 RTP/AVP 8 0 101
+c=IN IP4 192.0.2.2
+a=rtpmap:8 PCMA/8000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+
+001005: *Mar 18 09:30:00.064: //-1/xxxxxxxxxxxx/SIP/Msg/ccsipDisplayMsg:
+Received: 
+SIP/2.0 403 Forbidden
+Via: SIP/2.0/UDP 192.0.2.2:5060;branch=z9hG4bKcube0002
+From: <sip:0505550123@192.0.2.2>;tag=cube-tag-2
+To: <sip:+966135560134@198.51.100.10>;tag=itsp-to-2
+Call-ID: e5f6a7b8-0002@192.0.2.2
+CSeq: 101 INVITE
+Reason: Q.850;cause=21;text="Calling party not allowed"
+Content-Length: 0
+
+
+001006: *Mar 18 09:30:00.066: //2002/AABBCCDD0001/SIP/Msg/ccsipDisplayMsg:
+Sent: 
+ACK sip:+966135560134@198.51.100.10:5060 SIP/2.0
+Via: SIP/2.0/UDP 192.0.2.2:5060;branch=z9hG4bKcube0002
+From: <sip:0505550123@192.0.2.2>;tag=cube-tag-2
+To: <sip:+966135560134@198.51.100.10>;tag=itsp-to-2
+Call-ID: e5f6a7b8-0002@192.0.2.2
+CSeq: 101 ACK
+Content-Length: 0
+
+
+001007: *Mar 18 09:30:00.069: //2001/AABBCCDD0001/CCAPI/cc_api_call_disconnected:
+   Cause Value=21, Interface=0x7F1C2C3D4E00, Call Id=2001
+001008: *Mar 18 09:30:00.072: //2001/AABBCCDD0001/SIP/Msg/ccsipDisplayMsg:
+Sent: 
+SIP/2.0 403 Forbidden
+Via: SIP/2.0/UDP 198.51.100.10:5060;branch=z9hG4bKitsp0001
+From: <sip:+966505550123@198.51.100.10>;tag=itsp-tag-1
+To: <sip:+966135560134@192.0.2.2>;tag=cube-in-tag-1
+Call-ID: a1b2c3d4-0001@198.51.100.10
+CSeq: 1 INVITE
+Reason: Q.850;cause=21
+Server: Cisco-SIPGateway/IOS-17.6.1a
+Content-Length: 0
+
+
+001009: *Mar 18 09:30:00.102: //-1/xxxxxxxxxxxx/SIP/Msg/ccsipDisplayMsg:
+Received: 
+ACK sip:+966135560134@192.0.2.2:5060 SIP/2.0
+Via: SIP/2.0/UDP 198.51.100.10:5060;branch=z9hG4bKitsp0001
+From: <sip:+966505550123@198.51.100.10>;tag=itsp-tag-1
+To: <sip:+966135560134@192.0.2.2>;tag=cube-in-tag-1
+Call-ID: a1b2c3d4-0001@198.51.100.10
+CSeq: 1 ACK
+Content-Length: 0
+
+
